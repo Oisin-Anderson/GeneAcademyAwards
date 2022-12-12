@@ -28,14 +28,6 @@
           <h3>Team Data</h3>
           <form action="/teams" method="POST" enctype = "multipart/form-data">
             <div>
-              <label for="exptea">League:</label>
-              <input type="text" id="exptea" name="exptea" value={{league}}><br>
-              <label for="team">Choose A Team</label>
-              <select id="team" name="team" class="custom-select">
-                {% for i in range(0, clength) %}
-                <option value={{clubs[i]}}>{{clubs[i]}}</option>
-                {% endfor %}
-              </select>
             </div>
             <div class="pt-2">
               <input type="submit" class="btn btn-primary" value="Get Data">

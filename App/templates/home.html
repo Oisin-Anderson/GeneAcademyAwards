@@ -1,31 +1,84 @@
 {% extends 'partial/layout.html' %}
 
 {% block content %}
-    <div class="container mt-5">
-        <div class="row justify-content-center">
-          <div class="col-sm-12">
-            <div class="card-columns">
-              <div class="card bg-info">
-                <div class="card-header text-center">
-                  <h3><a href="/nompage" class="text-decoration-none text-dark text-wrap text-capitalize">best picture 2022</a></h3>
-                </div>
-              </div>
-              
-              <div class="card bg-light">
-                <div class="card-header text-center">
-                  <h3>Match Predictions</h3>
-                </div>
-              </div>
-              
-              <div class="card bg-info">
-                <div class="card-header text-center">
-                  <h3>Export Data</h3>
-                </div>
-              </div>
+    <div class="container col-sm-12 mt-5 mb-3">
+      <div class="row justify-content-center">
+        <div class="col-sm-4 text-center bg-light rounded-sm shadow mr-5 p-4">
+          <h3>Vote Nominations</h3>
+          <form action="/nompage" method="POST" enctype = "multipart/form-data">
+            <div>
+              <label for="year">Choose Year:</label>
+              <select id="year" name="year" class="custom-select">
+                <option value="2018-2022">2018-2022</option>
+                <option value="2022">2022</option>
+              </select>
             </div>
-          </div>
+            <div class="pt-2">
+              <input type="submit" class="btn btn-warning" value="Go To Nominating">
+            </div>
+          </form>
         </div>
+
+
+        <div class="col-sm-4 text-center bg-light rounded-sm shadow mr-5 p-4">
+          <h3>View Nominations</h3>
+          <form action="/viepage" method="POST" enctype = "multipart/form-data">
+            <div>
+              <label for="year">Choose Year:</label>
+              <select id="year" name="year" class="custom-select">
+                <option value="2018-2022">2018-2022</option>
+                <option value="2022">2022</option>
+              </select>
+            </div>
+            <div class="pt-2">
+              <input type="submit" class="btn btn-warning" value="Go To Nominations">
+            </div>
+          </form>
+        </div>              
+      </div>
+
+
+      <div class="row justify-content-center mt-5">
+        <div class="col-sm-4 text-center bg-light rounded-sm shadow mr-5 p-4">
+          <h3>Award Voting</h3>
+          <form action="/votpage" method="POST" enctype = "multipart/form-data">
+            <div>
+              <label for="year">Choose Year:</label>
+              <select id="year" name="year" class="custom-select">
+                <option value="2018-2022">2018-2022</option>
+                <option value="2022">2022</option>
+              </select>
+            </div>
+            <div class="pt-2">
+              <input type="submit" class="btn btn-warning" value="Go To Voting">
+            </div>
+          </form>
+        </div>
+
+
+        <div class="col-sm-4 text-center bg-light rounded-sm shadow mr-5 p-4">
+          <h3>Award Ceremony</h3>
+          <form action="/awapage" method="POST" enctype = "multipart/form-data">
+            <div>
+              <label for="year">Choose Year:</label>
+              <select id="year" name="year" class="custom-select">
+                <option value="2018-2022">2018-2022</option>
+                <option value="2022">2022</option>
+              </select>
+            </div>
+            <div class="pt-2">
+              <input type="submit" class="btn btn-warning" value="Go To Ceremony">
+            </div>
+          </form>
+        </div>              
       </div>
     </div>
+
+    <script language = "JavaScript">
+      document.getElementById("exptea").disabled = true;
+    </script>
+    <script language = "JavaScript">
+      document.getElementById("expfix").disabled = true;
+    </script>
 
 {% endblock %}

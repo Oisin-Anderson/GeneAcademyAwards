@@ -4,6 +4,7 @@ import pandas as pd
 
 app = Flask(__name__)
 
+
 #Home Page Loads
 @app.route('/')
 def home():
@@ -17,8 +18,31 @@ def about():
 #Nominating Page Loads
 @app.route('/nompage', methods=['POST', 'GET'])
 def nompage():
+    
+    list = []
+    year = request.form['year']
 
-    return render_template('nompage.html')
+    if(year == "2018-2022"):
+        df = pd.read_csv("App/data/2018-2022AwardList.csv")
+        for idx, row in df.iterrows():
+            list.append(row["awards"])
+        
+    elif(year == "2022"):
+        df = pd.read_csv("App/data/2022AwardList.csv")
+        for idx, row in df.iterrows():
+            list.append(row["awards"])
+
+    
+
+    print(list)
+
+    return render_template('nompage.html', year=year)
+
+#View Nominations Page Loads
+@app.route('/viepage', methods=['POST', 'GET'])
+def viepage():
+
+    return render_template('viepage.html')
 
 #Voting Page Loads
 @app.route('/votpage', methods=['POST'])
