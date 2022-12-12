@@ -1,6 +1,9 @@
 from flask import Flask, render_template, request
 import csv
 import pandas as pd
+import numpy as np
+import math
+from nominations import nomdatcoll
 
 app = Flask(__name__)
 
@@ -15,7 +18,7 @@ def home():
 def about():
     return render_template('about.html')
 
-#Nominating Page Loads
+#List of Awards For Nominating Page Loads
 @app.route('/nompage', methods=['POST', 'GET'])
 def nompage():
     
@@ -33,10 +36,80 @@ def nompage():
             list.append(row["awards"])
 
     
+    with open('App/data/current.csv', 'w', encoding='UTF8', newline='') as f:
+        writer = csv.writer(f)
+        header = ['year', 'award']
+        writer.writerow(header)
+        line = [year, ""]
+        writer.writerow(line)
+
+    
 
     print(list)
+    length = len(list)
+    rows = int(math.ceil(length/3))
 
-    return render_template('nompage.html', year=year)
+    start = 0
+    end=3
+    
+    return render_template('nompage.html', year=year, list=list, length=length, rows=rows, start=start, end=end)
+
+#Nominating Page Loads
+@app.route('/nom/<award>', methods=['POST', 'GET'])
+def nom(award):
+    df = pd.read_csv("App/data/current.csv")
+    for idx, row in df.iterrows():
+        year = row["year"]
+
+    if type(year) != str:
+        year = int(year)
+
+    films = []
+    df = pd.read_csv("App/data/allFilms.csv")
+    for idx, row in df.iterrows():
+        films.append(row["films"])
+
+    flength = len(films)
+
+    with open('App/data/current.csv', 'w', encoding='UTF8', newline='') as f:
+        writer = csv.writer(f)
+        header = ['year', 'award']
+        writer.writerow(header)
+        line = [year, award]
+        writer.writerow(line)
+        
+    nominated = []
+    nominator = []
+    df = pd.read_csv("App/data/2022NomBestPic.csv")
+    for idx, row in df.iterrows():
+        nominated.append(row["movie"])
+        nominator.append(row["nominator"])
+
+    nlength = len(nominated)
+    rows = int(math.ceil(nlength/3))
+
+    start = 0
+    end=3
+
+
+    return render_template('nominations.html', award=award, year=year, films=films, flength=flength, nominated=nominated, nominator=nominator, nlength=nlength, rows=rows, start=start, end=end)
+
+#Submit Nomination Loads
+@app.route('/subnom', methods=['POST', 'GET'])
+def subnom():
+    film = request.form['film']
+    person = request.form['person']
+    
+    films, rows, start, end, year, award, flength, nlength = nomdatcoll(film, person)
+
+    nominated = []
+    nominator = []
+    df = pd.read_csv("App/data/2022NomBestPic.csv")
+    for idx, row in df.iterrows():
+        nominated.append(row["movie"])
+        nominator.append(row["nominator"])
+
+    return render_template('nominations.html', nominated=nominated, nominator=nominator, films=films, rows=rows, start=start, end=end, year=year, award=award, flength=flength, nlength=nlength)
 
 #View Nominations Page Loads
 @app.route('/viepage', methods=['POST', 'GET'])
