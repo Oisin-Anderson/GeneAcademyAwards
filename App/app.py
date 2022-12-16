@@ -3,7 +3,7 @@ import csv
 import pandas as pd
 import numpy as np
 import math
-from nominations import nomdatcoll
+from nominations import nomdatcoll, nomcsv
 
 app = Flask(__name__)
 
@@ -63,6 +63,7 @@ def nom(award):
 
     if type(year) != str:
         year = int(year)
+        year = str(year)
 
     films = []
     df = pd.read_csv("App/data/allFilms.csv")
@@ -77,10 +78,16 @@ def nom(award):
         writer.writerow(header)
         line = [year, award]
         writer.writerow(line)
+
+    print(type(year))
+    print(year)
+    print(type(award))
+    print(award)
+    awlink = nomcsv(award, year)
         
     nominated = []
     nominator = []
-    df = pd.read_csv("App/data/2022NomBestPic.csv")
+    df = pd.read_csv(awlink)
     for idx, row in df.iterrows():
         nominated.append(row["movie"])
         nominator.append(row["nominator"])
@@ -90,9 +97,11 @@ def nom(award):
 
     start = 0
     end=3
+    error = 0
+    msg = ""
 
 
-    return render_template('nominations.html', award=award, year=year, films=films, flength=flength, nominated=nominated, nominator=nominator, nlength=nlength, rows=rows, start=start, end=end)
+    return render_template('nominations.html', award=award, year=year, films=films, flength=flength, nominated=nominated, nominator=nominator, nlength=nlength, rows=rows, start=start, end=end, error=error, msg=msg)
 
 #Submit Nomination Loads
 @app.route('/subnom', methods=['POST', 'GET'])
@@ -100,16 +109,17 @@ def subnom():
     film = request.form['film']
     person = request.form['person']
     
-    films, rows, start, end, year, award, flength, nlength = nomdatcoll(film, person)
+    films, rows, start, end, year, award, flength, nlength, error, msg = nomdatcoll(film, person)
+    awlink = nomcsv(award, year)
 
     nominated = []
     nominator = []
-    df = pd.read_csv("App/data/2022NomBestPic.csv")
+    df = pd.read_csv(awlink)
     for idx, row in df.iterrows():
         nominated.append(row["movie"])
         nominator.append(row["nominator"])
 
-    return render_template('nominations.html', nominated=nominated, nominator=nominator, films=films, rows=rows, start=start, end=end, year=year, award=award, flength=flength, nlength=nlength)
+    return render_template('nominations.html', nominated=nominated, nominator=nominator, films=films, rows=rows, start=start, end=end, year=year, award=award, flength=flength, nlength=nlength, error=error, msg=msg)
 
 #View Nominations Page Loads
 @app.route('/viepage', methods=['POST', 'GET'])
