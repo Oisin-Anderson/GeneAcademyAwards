@@ -26,17 +26,17 @@ def nompage():
     year = request.form['year']
 
     if(year == "2018-2022"):
-        df = pd.read_csv("App/data/2018-2022AwardList.csv")
+        df = pd.read_csv("data/2018-2022AwardList.csv")
         for idx, row in df.iterrows():
             list.append(row["awards"])
         
     elif(year == "2022"):
-        df = pd.read_csv("App/data/2022AwardList.csv")
+        df = pd.read_csv("data/2022AwardList.csv")
         for idx, row in df.iterrows():
             list.append(row["awards"])
 
     
-    with open('App/data/current.csv', 'w', encoding='UTF8', newline='') as f:
+    with open('data/current.csv', 'w', encoding='UTF8', newline='') as f:
         writer = csv.writer(f)
         header = ['year', 'award']
         writer.writerow(header)
@@ -57,7 +57,7 @@ def nompage():
 #Nominating Page Loads
 @app.route('/nom/<award>', methods=['POST', 'GET'])
 def nom(award):
-    df = pd.read_csv("App/data/current.csv")
+    df = pd.read_csv("data/current.csv")
     for idx, row in df.iterrows():
         year = row["year"]
 
@@ -66,13 +66,13 @@ def nom(award):
         year = str(year)
 
     films = []
-    df = pd.read_csv("App/data/allFilms.csv")
+    df = pd.read_csv("data/allFilms.csv")
     for idx, row in df.iterrows():
         films.append(row["films"])
 
     flength = len(films)
 
-    with open('App/data/current.csv', 'w', encoding='UTF8', newline='') as f:
+    with open('data/current.csv', 'w', encoding='UTF8', newline='') as f:
         writer = csv.writer(f)
         header = ['year', 'award']
         writer.writerow(header)
@@ -87,10 +87,12 @@ def nom(award):
         
     nominated = []
     nominator = []
+    candidates = []
     df = pd.read_csv(awlink)
     for idx, row in df.iterrows():
         nominated.append(row["movie"])
         nominator.append(row["nominator"])
+        candidates.append(row["candidate"])
 
     nlength = len(nominated)
     rows = int(math.ceil(nlength/3))
@@ -101,25 +103,37 @@ def nom(award):
     msg = ""
 
 
-    return render_template('nominations.html', award=award, year=year, films=films, flength=flength, nominated=nominated, nominator=nominator, nlength=nlength, rows=rows, start=start, end=end, error=error, msg=msg)
+    return render_template('nominations.html', award=award, year=year, films=films, flength=flength, nominated=nominated, candidates=candidates, nominator=nominator, nlength=nlength, rows=rows, start=start, end=end, error=error, msg=msg)
 
 #Submit Nomination Loads
 @app.route('/subnom', methods=['POST', 'GET'])
 def subnom():
     film = request.form['film']
+    candidate = request.form['candidate']
     person = request.form['person']
+
+    df = pd.read_csv("data/current.csv")
+    for idx, row in df.iterrows():
+        year = row["year"]
+        award = row["award"]
+
+    if type(year) != str:
+        year = int(year)
+        year = str(year)
     
-    films, rows, start, end, year, award, flength, nlength, error, msg = nomdatcoll(film, person)
     awlink = nomcsv(award, year)
+    films, rows, start, end, flength, nlength, error, msg = nomdatcoll(film, person, awlink, candidate)
 
     nominated = []
     nominator = []
+    candidates = []
     df = pd.read_csv(awlink)
     for idx, row in df.iterrows():
         nominated.append(row["movie"])
         nominator.append(row["nominator"])
+        candidates.append(row["candidate"])
 
-    return render_template('nominations.html', nominated=nominated, nominator=nominator, films=films, rows=rows, start=start, end=end, year=year, award=award, flength=flength, nlength=nlength, error=error, msg=msg)
+    return render_template('nominations.html', nominated=nominated, nominator=nominator, candidates=candidates, films=films, rows=rows, start=start, end=end, year=year, award=award, flength=flength, nlength=nlength, error=error, msg=msg)
 
 #View Nominations Page Loads
 @app.route('/viepage', methods=['POST', 'GET'])

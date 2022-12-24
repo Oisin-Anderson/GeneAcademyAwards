@@ -2,46 +2,32 @@ import csv
 import pandas as pd
 import math
 
-def nomdatcoll(film, person):
+def nomdatcoll(film, person, awlink, candidate):
     error = 0
     msg = ""
-
-    df = pd.read_csv("App/data/current.csv")
-    for idx, row in df.iterrows():
-        year = row["year"]
-        award = row["award"]
-
-    if type(year) != str:
-        year = int(year)
-        year = str(year)
-
     films = []
-    df = pd.read_csv("App/data/allFilms.csv")
+    df = pd.read_csv("data/allFilms.csv")
     for idx, row in df.iterrows():
         films.append(row["films"])
 
     flength = len(films)
-
-    with open('App/data/current.csv', 'w', encoding='UTF8', newline='') as f:
-        writer = csv.writer(f)
-        header = ['year', 'award']
-        writer.writerow(header)
-        line = [year, award]
-        writer.writerow(line)
         
     nominated = []
     nominator = []
-    df = pd.read_csv("App/data/Nominations/picture22.csv")
+    candidates = []
+    df = pd.read_csv(awlink)
     for idx, row in df.iterrows():
         if (row['movie'] == film):
             error = 1
             msg = "Movie Already Entered"
         nominated.append(row["movie"])
         nominator.append(row["nominator"])
+        candidates.append(row["candidate"])
 
     if error == 0:
         nominated.append(film)
         nominator.append(person)
+        candidates.append(candidate)
     
     oisin = 0
     ffion = 0
@@ -57,16 +43,17 @@ def nomdatcoll(film, person):
         if oisin > 3 or ffion > 3 or fiachra > 3:
             nominated.pop(i)
             nominator.pop(i)
+            candidates.pop(i)
             error = 1
             msg = "User has Entered the Max Amount of Nomiations"
 
     nlength = len(nominated)
-    with open('App/data/Nominations/picture22.csv', 'w', encoding='UTF8', newline='') as f:
+    with open(awlink, 'w', encoding='UTF8', newline='') as f:
         writer = csv.writer(f)
-        header = ['movie', 'nominator']
+        header = ['movie', 'nominator', 'candidate']
         writer.writerow(header)
         for i in range(0, nlength):
-            line = [nominated[i], nominator[i]]
+            line = [nominated[i], nominator[i], candidate[i]]
             writer.writerow(line)
 
     rows = int(math.ceil(nlength/3))
@@ -75,7 +62,7 @@ def nomdatcoll(film, person):
     end=3
 
 
-    return films, rows, start, end, year, award, flength, nlength, error, msg
+    return films, rows, start, end, flength, nlength, error, msg
 
 
 def nomcsv(award, year):
@@ -83,14 +70,14 @@ def nomcsv(award, year):
     awards = []
     codes = []
 
-    df = pd.read_csv("App/data/"+year+"AwardList.csv")
+    df = pd.read_csv("data/"+year+"AwardList.csv")
     for idx, row in df.iterrows():
         awards.append(row["awards"])
         codes.append(row["code"])
 
     for i in range(len(awards)):
         if awards[i] == award:
-            awlink = "App/data/Nominations/"+codes[i]+".csv"
+            awlink = "data/Nominations/"+codes[i]+".csv"
         print(awards[i])
         print(codes[i])
 
