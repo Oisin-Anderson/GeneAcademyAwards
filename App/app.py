@@ -106,11 +106,12 @@ def nom(award):
     return render_template('nominations.html', award=award, year=year, films=films, flength=flength, nominated=nominated, candidates=candidates, nominator=nominator, nlength=nlength, rows=rows, start=start, end=end, error=error, msg=msg)
 
 #Submit Nomination Loads
-@app.route('/subnom', methods=['POST', 'GET'])
+@app.route('/subnom', methods=['GET', 'POST'])
 def subnom():
     film = request.form['film']
     candidate = request.form['candidate']
     person = request.form['person']
+    print(candidate)
 
     df = pd.read_csv("data/current.csv")
     for idx, row in df.iterrows():

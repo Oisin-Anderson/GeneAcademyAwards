@@ -1,8 +1,10 @@
 import csv
 import pandas as pd
 import math
+import os
 
 def nomdatcoll(film, person, awlink, candidate):
+    print(candidate)
     error = 0
     msg = ""
     films = []
@@ -23,11 +25,13 @@ def nomdatcoll(film, person, awlink, candidate):
         nominated.append(row["movie"])
         nominator.append(row["nominator"])
         candidates.append(row["candidate"])
+    print(candidate)
 
     if error == 0:
         nominated.append(film)
         nominator.append(person)
         candidates.append(candidate)
+    print(candidate)
     
     oisin = 0
     ffion = 0
@@ -53,7 +57,7 @@ def nomdatcoll(film, person, awlink, candidate):
         header = ['movie', 'nominator', 'candidate']
         writer.writerow(header)
         for i in range(0, nlength):
-            line = [nominated[i], nominator[i], candidate[i]]
+            line = [nominated[i], nominator[i], candidates[i]]
             writer.writerow(line)
 
     rows = int(math.ceil(nlength/3))
@@ -78,8 +82,14 @@ def nomcsv(award, year):
     for i in range(len(awards)):
         if awards[i] == award:
             awlink = "data/Nominations/"+codes[i]+".csv"
-        print(awards[i])
-        print(codes[i])
+
+    
+    isExist = os.path.exists(awlink)
+    if(isExist == False):
+        with open(awlink, 'w', encoding='UTF8', newline='') as f:
+            writer = csv.writer(f)
+            header = ['movie', 'nominator', 'candidate']
+            writer.writerow(header)
 
 
     return awlink
