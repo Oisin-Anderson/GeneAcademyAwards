@@ -139,8 +139,93 @@ def subnom():
 #View Nominations Page Loads
 @app.route('/viepage', methods=['POST', 'GET'])
 def viepage():
+    
+    list = []
+    year = request.form['year']
 
-    return render_template('viepage.html')
+    if(year == "2018-2022"):
+        df = pd.read_csv("data/2018-2022AwardList.csv")
+        for idx, row in df.iterrows():
+            list.append(row["awards"])
+        
+    elif(year == "2022"):
+        df = pd.read_csv("data/2022AwardList.csv")
+        for idx, row in df.iterrows():
+            list.append(row["awards"])
+
+    
+    with open('data/current.csv', 'w', encoding='UTF8', newline='') as f:
+        writer = csv.writer(f)
+        header = ['year', 'award']
+        writer.writerow(header)
+        line = [year, ""]
+        writer.writerow(line)
+
+    
+
+    print(list)
+    length = len(list)
+    rows = int(math.ceil(length/3))
+
+    start = 0
+    end=3
+    
+    return render_template('viepage.html', year=year, list=list, length=length, rows=rows, start=start, end=end)
+
+
+
+#View Nominations Page Loads
+@app.route('/indivnom/<award>', methods=['POST', 'GET'])
+def indivnom(award):
+    df = pd.read_csv("data/current.csv")
+    for idx, row in df.iterrows():
+        year = row["year"]
+
+    if type(year) != str:
+        year = int(year)
+        year = str(year)
+
+    films = []
+    df = pd.read_csv("data/allFilms.csv")
+    for idx, row in df.iterrows():
+        films.append(row["films"])
+
+    flength = len(films)
+
+    with open('data/current.csv', 'w', encoding='UTF8', newline='') as f:
+        writer = csv.writer(f)
+        header = ['year', 'award']
+        writer.writerow(header)
+        line = [year, award]
+        writer.writerow(line)
+
+    print(type(year))
+    print(year)
+    print(type(award))
+    print(award)
+    awlink = nomcsv(award, year)
+        
+    nominated = []
+    nominator = []
+    candidates = []
+    df = pd.read_csv(awlink)
+    for idx, row in df.iterrows():
+        nominated.append(row["movie"])
+        nominator.append(row["nominator"])
+        candidates.append(row["candidate"])
+
+    nlength = len(nominated)
+    rows = int(math.ceil(nlength/3))
+
+    start = 0
+    end=3
+    error = 0
+    msg = ""
+
+
+    return render_template('vienom.html', award=award, year=year, films=films, flength=flength, nominated=nominated, candidates=candidates, nominator=nominator, nlength=nlength, rows=rows, start=start, end=end, error=error, msg=msg)
+
+
 
 #Voting Page Loads
 @app.route('/votpage', methods=['POST'])
