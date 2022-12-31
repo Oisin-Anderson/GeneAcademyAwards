@@ -1,19 +1,19 @@
-awards,code,progress
-Best Picture,picture1822,None
-Best Actor,actor1822,None
-Best Actress,actress1822,None
-Best Score,score1822,None
-Best Supp Actor,suppactor1822,None
-Best Supp Actress,suppactress1822,None
-Best Protaganist,protag1822,None
-Best Antaganist,antag1822,None
-Best Effects,effects1822,None
-Best Scene,scene1822,None
-Best Ending,ending1822,None
-Best Opening,opening1822,None
-Worst Picture,worst1822,None
-Best Cinematography,cinemat1822,None
-Best On Screen Combo,combo1822,None
-Best Message,message1822,None
-Best Performance,perform1822,None
-Best Editing,editing1822,None
+awards,code,nominating,voting
+Best Picture,picture1822,None,None
+Best Actor,actor1822,None,None
+Best Actress,actress1822,None,None
+Best Score,score1822,None,None
+Best Supp Actor,suppactor1822,None,None
+Best Supp Actress,suppactress1822,None,None
+Best Protaganist,protag1822,None,None
+Best Antaganist,antag1822,None,None
+Best Effects,effects1822,None,None
+Best Scene,scene1822,None,None
+Best Ending,ending1822,None,None
+Best Opening,opening1822,None,None
+Worst Picture,worst1822,None,None
+Best Cinematography,cinemat1822,None,None
+Best On Screen Combo,combo1822,None,None
+Best Message,message1822,None,None
+Best Performance,perform1822,None,None
+Best Editing,editing1822,None,None

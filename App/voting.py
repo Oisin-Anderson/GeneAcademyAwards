@@ -3,7 +3,7 @@ import pandas as pd
 import math
 import os
 
-def nomdatcoll(film, person, awlink, candidate, year):
+def votdatcoll(film, person, awlink, candidate):
     print(candidate)
     error = 0
     msg = ""
@@ -79,7 +79,7 @@ def nomdatcoll(film, person, awlink, candidate, year):
     return films, rows, start, end, flength, nlength, error, msg, prog
 
 
-def nomcsv(award, year):
+def votcsv(award, year):
     awlink = ""
     awards = []
     codes = []
@@ -91,31 +91,31 @@ def nomcsv(award, year):
 
     for i in range(len(awards)):
         if awards[i] == award:
-            awlink = "data/Nominations/"+codes[i]+".csv"
+            awlink = "data/Votes/"+codes[i]+".csv"
 
     
     isExist = os.path.exists(awlink)
     if(isExist == False):
         with open(awlink, 'w', encoding='UTF8', newline='') as f:
             writer = csv.writer(f)
-            header = ['movie', 'nominator', 'candidate']
+            header = ['movie', 'fiachra', 'ffion', 'oisin', 'total']
             writer.writerow(header)
 
 
     return awlink
 
 
-def nomcode(prog, award, year):
+def votcode(prog, award, year):
     
     awards = []
     codes = []
-    progs = []
+    noms = []
     votes = []
     df = pd.read_csv("data/"+year+"AwardList.csv")
     for idx, row in df.iterrows():
         awards.append(row["awards"])
         codes.append(row["code"])
-        progs.append(row["nominating"])
+        noms.append(row["nominating"])
         votes.append(row["voting"])
 
     length = len(awards)
@@ -125,10 +125,10 @@ def nomcode(prog, award, year):
         writer.writerow(header)
         for i in range(0, length):
             if(award == awards[i]):
-                line = [awards[i], codes[i], prog, votes[i]]
+                line = [awards[i], codes[i], noms[i], prog]
                 writer.writerow(line)
             else:
-                line = [awards[i], codes[i], progs[i], votes[i]]
+                line = [awards[i], codes[i], noms[i], votes[i]]
                 writer.writerow(line)
                 
 

@@ -1,13 +1,13 @@
-awards,code,progress
-Best Picture,picture22,Complete
-Best Actor,actor22,None
-Best Actress,actress22,None
-Best Score,score22,None
-Best Supp Actor,suppactor22,None
-Best Supp Actress,suppactress22,None
-Best Protaganist,protag22,None
-Best Antaganist,antag22,None
-Best Effects,effects22,None
-Best Scene,scene22,None
-Best Screenplay,screenplay22,None
-Best Message,message22,None
+awards,code,nominating,voting
+Best Picture,picture22,Complete,None
+Best Actor,actor22,None,None
+Best Actress,actress22,None,None
+Best Score,score22,None,None
+Best Supp Actor,suppactor22,None,None
+Best Supp Actress,suppactress22,None,None
+Best Protaganist,protag22,None,None
+Best Antaganist,antag22,None,None
+Best Effects,effects22,None,None
+Best Scene,scene22,None,None
+Best Screenplay,screenplay22,None,None
+Best Message,message22,None,None

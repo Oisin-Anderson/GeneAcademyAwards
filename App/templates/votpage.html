@@ -1,0 +1,38 @@
+{% extends 'partial/layout.html' %}
+
+{% block content %}
+    <div class="container mt-3">
+        <div class="row justify-content-center">
+          <div class="col-sm-12">
+            <div class="card bg-info">
+              <div class="card-header text-center">
+                <h2>Voting Page For {{year}} Ceremony</h2>
+              </div>
+            </div>
+            <div class="mt-3">
+              {% for i in range(0, rows) %}
+                {% if i != 0 %}
+                  {% set start = i * 3 %}
+                  {% set end = (i * 3) + 3 %}
+                {% endif %}
+                {% if end > length %}
+                  {% set end = length %}
+                {% endif %}
+                <div class="card-columns">
+                  {% for j in range(start, end) %}
+                  <div class="card bg-light">
+                    <div class="card-header text-center">
+                      <h3><a href="/vot/{{list[j]}}" class="text-decoration-none text-dark text-wrap text-capitalize">{{list[j]}}</a></h3>
+                      <h6><a href="/vot/{{list[j]}}" class="text-decoration-none text-dark text-wrap text-capitalize">{{prog[j]}}</a></h6>
+                    </div>
+                  </div>
+                  {% endfor %}
+                </div>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+{% endblock %}

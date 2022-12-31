@@ -3,7 +3,8 @@ import csv
 import pandas as pd
 import numpy as np
 import math
-from nominations import nomdatcoll, nomcsv, updatecode
+from nominations import nomdatcoll, nomcsv, nomcode
+from voting import votcsv, votdatcoll, votcode
 
 app = Flask(__name__)
 
@@ -29,7 +30,7 @@ def nompage():
     df = pd.read_csv("data/"+year+"AwardList.csv")
     for idx, row in df.iterrows():
             list.append(row["awards"])
-            prog.append(row['progress'])
+            prog.append(row['nominating'])
     
     with open('data/current.csv', 'w', encoding='UTF8', newline='') as f:
         writer = csv.writer(f)
@@ -119,7 +120,7 @@ def subnom():
     
     awlink = nomcsv(award, year)
     films, rows, start, end, flength, nlength, error, msg, prog = nomdatcoll(film, person, awlink, candidate, year)
-    updatecode(prog, award, year)
+    nomcode(prog, award, year)
 
     nominated = []
     nominator = []
@@ -226,66 +227,114 @@ def indivnom(award):
 #Voting Page Loads
 @app.route('/votpage', methods=['POST'])
 def votpage():    
-    df = pd.read_csv("FinalYearProjectCurrent/store/leagueName.csv")
-    for idx, row in df.iterrows():
-        league = row["CurLeague"]
-        sleague = row["StorLeague"]
-        date = row["Date"]
-
-    seasons = ["2021"]
-
-    clubs = fleagueTeams(league, seasons)
-    length = len(clubs)
-
-    for j in range(len(clubs)):
-        temp = clubs[j]
-        text = ""
-        for i in range(len(temp)):
-            if temp[i] == ' ':
-                text = text + '_'
-            else:
-                text = text + temp[i]
-        clubs[j] = text
     
-    clubs.sort()
-    print(clubs)
+    list = []
+    prog = []
+    year = request.form['year']
 
-    return render_template('leaguepage.html', cleague=league, clubs=clubs, length=length, date=date, sleague=sleague)
+    df = pd.read_csv("data/"+year+"AwardList.csv")
+    for idx, row in df.iterrows():
+            list.append(row["awards"])
+            prog.append(row['voting'])
+    
+    with open('data/current.csv', 'w', encoding='UTF8', newline='') as f:
+        writer = csv.writer(f)
+        header = ['year', 'award']
+        writer.writerow(header)
+        line = [year, ""]
+        writer.writerow(line)
+
+    
+
+    print(list)
+    length = len(list)
+    rows = int(math.ceil(length/3))
+
+    start = 0
+    end=3
+    
+    return render_template('votpage.html', year=year, list=list, prog=prog, length=length, rows=rows, start=start, end=end)
+
+
+#Nominating Page Loads
+@app.route('/vot/<award>', methods=['POST', 'GET'])
+def vot(award):
+    df = pd.read_csv("data/current.csv")
+    for idx, row in df.iterrows():
+        year = row["year"]
+
+    if type(year) != str:
+        year = int(year)
+        year = str(year)
+
+    with open('data/current.csv', 'w', encoding='UTF8', newline='') as f:
+        writer = csv.writer(f)
+        header = ['year', 'award']
+        writer.writerow(header)
+        line = [year, award]
+        writer.writerow(line)
+
+    awlink = votcsv(award, year)
+        
+    films = []
+    df = pd.read_csv(awlink)
+    for idx, row in df.iterrows():
+        films.append(row["movie"])
+
+    length = len(films)
+    rows = int(math.ceil(length/3))
+
+    start = 0
+    end=3
+    error = 0
+    msg = ""
+
+    return render_template('voting.html', award=award, year=year, films=films, rows=rows, start=start, end=end, error=error, msg=msg, length=length)
+
+#Submit Votes
+@app.route('/subvot', methods=['GET', 'POST'])
+def subvot():
+    film = request.form['film']
+    candidate = request.form['candidate']
+    person = request.form['person']
+    print(candidate)
+
+    df = pd.read_csv("data/current.csv")
+    for idx, row in df.iterrows():
+        year = row["year"]
+        award = row["award"]
+
+    if type(year) != str:
+        year = int(year)
+        year = str(year)
+    
+    awlink = nomcsv(award, year)
+    films, rows, start, end, flength, nlength, error, msg, prog = nomdatcoll(film, person, awlink, candidate)
+    nomcode(prog, award, year)
+
+    nominated = []
+    nominator = []
+    candidates = []
+    df = pd.read_csv(awlink)
+    for idx, row in df.iterrows():
+        nominated.append(row["movie"])
+        nominator.append(row["nominator"])
+        candidates.append(row["candidate"])
+
+    return render_template('nominations.html', nominated=nominated, nominator=nominator, candidates=candidates, films=films, rows=rows, start=start, end=end, year=year, award=award, flength=flength, nlength=nlength, error=error, msg=msg)
+
+
+
+
+
+
 
 #Award Page Loads
 @app.route('/awapage', methods=['POST'])
 def awapage():
-    league = request.form['league']
-    
-    df = pd.read_csv("FinalYearProjectCurrent/store/leagueName.csv")
-    for idx, row in df.iterrows():
-        date = row["Date"]
-        sleague = row["StorLeague"]
 
-    with open('FinalYearProjectCurrent/store/leagueName.csv', 'w', encoding='UTF8', newline='') as f:
-        writer = csv.writer(f)
-        header = ['CurLeague', 'StorLeague', 'Date']
-        writer.writerow(header)
-        line = [league, sleague, date]
-        writer.writerow(line)
-    
-    seasons = ["2021"]
-    clubs = fleagueTeams(league, seasons)
-    length = len(clubs)
 
-    for j in range(len(clubs)):
-        temp = clubs[j]
-        text = ""
-        for i in range(len(temp)):
-            if temp[i] == ' ':
-                text = text + '_'
-            else:
-                text = text + temp[i]
-        clubs[j] = text
-    
-    clubs.sort()
-    print(clubs)
-    return render_template('headpage.html', league=league, clubs=clubs, length=length)
+    return render_template('headpage.html')
 
 
 if __name__ == '__main__':

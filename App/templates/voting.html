@@ -1,0 +1,54 @@
+{% extends 'partial/layout.html' %}
+
+{% block content %}
+    <div class="container mt-3 col-sm-12">
+      <div class="row justify-content-center">
+        <div class="col-sm-10">
+          <div class="card bg-info">
+            <div class="card-header text-center">
+              <h2>{{award}} {{year}}</h2>
+            </div>
+          </div>
+          {% for i in range(0, error) %}
+            <div class="card bg-danger mt-1">
+              <div class="card-header text-center">
+                <h4>{{msg}}</h4>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+      <div class="row justify-content-center mt-3">
+        <div class="col-sm-10 text-center bg-light rounded-sm shadow mr-5 p-4">
+          <h3>Vote</h3>
+          <form action="/subvot" method="POST" enctype = "multipart/form-data">
+            <div>
+                {% for i in range(0, rows) %}
+                    {% if i != 0 %}
+                        {% set start = i * 3 %}
+                        {% set end = (i * 3) + 3 %}
+                    {% endif %}
+                    {% if end > length %}
+                        {% set end = length %}
+                    {% endif %}
+                    <div class="card-columns">
+                        {% for j in range(start, end) %}
+                        <div class="card bg-warning">
+                            <div class="card-header text-center">
+                                <h4>{{films[j]}}</h4>
+                                <input type="number" class="form-control" id="film{{j}}" name="film{{j}}" min="1" max="9">
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% endfor %}
+            </div>
+            <div class="pt-2">
+              <input type="submit" class="btn btn-warning" value="Submit Votes">
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+{% endblock %}
