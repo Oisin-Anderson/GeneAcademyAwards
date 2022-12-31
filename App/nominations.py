@@ -3,7 +3,7 @@ import pandas as pd
 import math
 import os
 
-def nomdatcoll(film, person, awlink, candidate):
+def nomdatcoll(film, person, awlink, candidate, year):
     print(candidate)
     error = 0
     msg = ""
@@ -65,8 +65,18 @@ def nomdatcoll(film, person, awlink, candidate):
     start = 0
     end=3
 
+    prog = ""
 
-    return films, rows, start, end, flength, nlength, error, msg
+    if nlength == 9:
+        prog = "Complete"
+    elif nlength > 0:
+        prog = "Started"
+    else:
+        prog = "None"
+
+
+
+    return films, rows, start, end, flength, nlength, error, msg, prog
 
 
 def nomcsv(award, year):
@@ -93,3 +103,31 @@ def nomcsv(award, year):
 
 
     return awlink
+
+
+def updatecode(prog, award, year):
+    
+    awards = []
+    codes = []
+    progs = []
+    df = pd.read_csv("data/"+year+"AwardList.csv")
+    for idx, row in df.iterrows():
+        awards.append(row["awards"])
+        codes.append(row["code"])
+        progs.append(row["progress"])
+
+    length = len(awards)
+    with open("data/"+year+"AwardList.csv", 'w', encoding='UTF8', newline='') as f:
+        writer = csv.writer(f)
+        header = ['awards', 'code', 'progress']
+        writer.writerow(header)
+        for i in range(0, length):
+            if(award == awards[i]):
+                line = [awards[i], codes[i], prog]
+                writer.writerow(line)
+            else:
+                line = [awards[i], codes[i], progs[i]]
+                writer.writerow(line)
+                
+
+            

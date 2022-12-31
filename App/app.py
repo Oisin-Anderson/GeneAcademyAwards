@@ -3,7 +3,7 @@ import csv
 import pandas as pd
 import numpy as np
 import math
-from nominations import nomdatcoll, nomcsv
+from nominations import nomdatcoll, nomcsv, updatecode
 
 app = Flask(__name__)
 
@@ -23,18 +23,13 @@ def about():
 def nompage():
     
     list = []
+    prog = []
     year = request.form['year']
 
-    if(year == "2018-2022"):
-        df = pd.read_csv("data/2018-2022AwardList.csv")
-        for idx, row in df.iterrows():
+    df = pd.read_csv("data/"+year+"AwardList.csv")
+    for idx, row in df.iterrows():
             list.append(row["awards"])
-        
-    elif(year == "2022"):
-        df = pd.read_csv("data/2022AwardList.csv")
-        for idx, row in df.iterrows():
-            list.append(row["awards"])
-
+            prog.append(row['progress'])
     
     with open('data/current.csv', 'w', encoding='UTF8', newline='') as f:
         writer = csv.writer(f)
@@ -52,7 +47,7 @@ def nompage():
     start = 0
     end=3
     
-    return render_template('nompage.html', year=year, list=list, length=length, rows=rows, start=start, end=end)
+    return render_template('nompage.html', year=year, list=list, prog=prog, length=length, rows=rows, start=start, end=end)
 
 #Nominating Page Loads
 @app.route('/nom/<award>', methods=['POST', 'GET'])
@@ -123,7 +118,8 @@ def subnom():
         year = str(year)
     
     awlink = nomcsv(award, year)
-    films, rows, start, end, flength, nlength, error, msg = nomdatcoll(film, person, awlink, candidate)
+    films, rows, start, end, flength, nlength, error, msg, prog = nomdatcoll(film, person, awlink, candidate, year)
+    updatecode(prog, award, year)
 
     nominated = []
     nominator = []
