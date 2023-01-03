@@ -36,12 +36,20 @@
                         <div class="card bg-warning">
                             <div class="card-header text-center">
                                 <h4>{{films[j]}}</h4>
-                                <input type="number" class="form-control" id="film{{j}}" name="film{{j}}" min="1" max="9">
+                                <input type="number" class="form-control" id="film{{j}}" name="film{{j}}" min="1" max="{{length}}" required>
                             </div>
                         </div>
                         {% endfor %}
                     </div>
                 {% endfor %}
+            </div>
+            <div>
+              <label for="voter">Choose Voter:</label>
+              <select id="voter" name="voter" class="custom-select">
+                <option value="Fiachra">Fiachra</option>
+                <option value="Ffion">Ffion</option>
+                <option value="Oisin">Oisin</option>
+              </select>
             </div>
             <div class="pt-2">
               <input type="submit" class="btn btn-warning" value="Submit Votes">

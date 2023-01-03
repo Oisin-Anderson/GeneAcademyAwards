@@ -98,7 +98,7 @@ def nomcsv(award, year):
     if(isExist == False):
         with open(awlink, 'w', encoding='UTF8', newline='') as f:
             writer = csv.writer(f)
-            header = ['movie', 'nominator', 'candidate']
+            header = ['movie', 'nominator', 'candidate', 'ffion', 'fiachra', 'oisin', 'total']
             writer.writerow(header)
 
 

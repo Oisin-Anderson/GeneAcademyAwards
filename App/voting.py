@@ -79,32 +79,6 @@ def votdatcoll(film, person, awlink, candidate):
     return films, rows, start, end, flength, nlength, error, msg, prog
 
 
-def votcsv(award, year):
-    awlink = ""
-    awards = []
-    codes = []
-
-    df = pd.read_csv("data/"+year+"AwardList.csv")
-    for idx, row in df.iterrows():
-        awards.append(row["awards"])
-        codes.append(row["code"])
-
-    for i in range(len(awards)):
-        if awards[i] == award:
-            awlink = "data/Votes/"+codes[i]+".csv"
-
-    
-    isExist = os.path.exists(awlink)
-    if(isExist == False):
-        with open(awlink, 'w', encoding='UTF8', newline='') as f:
-            writer = csv.writer(f)
-            header = ['movie', 'fiachra', 'ffion', 'oisin', 'total']
-            writer.writerow(header)
-
-
-    return awlink
-
-
 def votcode(prog, award, year):
     
     awards = []

@@ -4,7 +4,7 @@ import pandas as pd
 import numpy as np
 import math
 from nominations import nomdatcoll, nomcsv, nomcode
-from voting import votcsv, votdatcoll, votcode
+from voting import votdatcoll, votcode
 
 app = Flask(__name__)
 
@@ -256,7 +256,7 @@ def votpage():
     return render_template('votpage.html', year=year, list=list, prog=prog, length=length, rows=rows, start=start, end=end)
 
 
-#Nominating Page Loads
+#Voting Page Loads
 @app.route('/vot/<award>', methods=['POST', 'GET'])
 def vot(award):
     df = pd.read_csv("data/current.csv")
@@ -274,7 +274,7 @@ def vot(award):
         line = [year, award]
         writer.writerow(line)
 
-    awlink = votcsv(award, year)
+    awlink = nomcsv(award, year)
         
     films = []
     df = pd.read_csv(awlink)
@@ -283,6 +283,13 @@ def vot(award):
 
     length = len(films)
     rows = int(math.ceil(length/3))
+    
+    with open("data/voteCount.csv", 'w', encoding='UTF8', newline='') as f:
+        writer = csv.writer(f)
+        header = ['count']
+        writer.writerow(header)
+        line = [length]
+        writer.writerow(line)
 
     start = 0
     end=3
@@ -294,34 +301,88 @@ def vot(award):
 #Submit Votes
 @app.route('/subvot', methods=['GET', 'POST'])
 def subvot():
-    film = request.form['film']
-    candidate = request.form['candidate']
-    person = request.form['person']
-    print(candidate)
+    voter = request.form['voter']
+    amount = 0
+    df = pd.read_csv("data/voteCount.csv")
+    for idx, row in df.iterrows():
+        amount = row["count"]
 
+    strings = []
+    num = ""
+    votes = []
+    id = ""
+    check = 0
+    real = 0
+    error = 0
+    for i in range(0, amount):
+        num = str(i)
+        strings = ["film", num]
+        id = "".join(strings)
+        check += i + 1
+        temp = request.form[id]
+        real += int(temp)
+        votes.append(request.form[id])
+    print(votes)
+
+
+    
     df = pd.read_csv("data/current.csv")
     for idx, row in df.iterrows():
         year = row["year"]
         award = row["award"]
-
     if type(year) != str:
         year = int(year)
         year = str(year)
-    
     awlink = nomcsv(award, year)
-    films, rows, start, end, flength, nlength, error, msg, prog = nomdatcoll(film, person, awlink, candidate)
-    nomcode(prog, award, year)
-
-    nominated = []
+    
+    movies = []
     nominator = []
     candidates = []
+    ffion = []
+    fiachra = []
+    oisin = []
+    total = []
     df = pd.read_csv(awlink)
     for idx, row in df.iterrows():
-        nominated.append(row["movie"])
+        movies.append(row["movie"])
         nominator.append(row["nominator"])
         candidates.append(row["candidate"])
+        ffion.append(row["ffion"])
+        fiachra.append(row["fiachra"])
+        oisin.append(row["oisin"])
+        total.append(row["total"])
 
-    return render_template('nominations.html', nominated=nominated, nominator=nominator, candidates=candidates, films=films, rows=rows, start=start, end=end, year=year, award=award, flength=flength, nlength=nlength, error=error, msg=msg)
+    
+    rows = int(math.ceil(amount/3))
+    start = 0
+    end=3
+    error = 0
+    msg = ""
+
+
+    if check != real:
+        error = 1
+        msg = "Incorrect Values Entered Below"
+        return render_template('voting.html', award=award, year=year, films=movies, rows=rows, start=start, end=end, error=error, msg=msg, length=amount)
+
+    with open(awlink, 'w', encoding='UTF8', newline='') as f:
+        writer = csv.writer(f)
+        header = ['movie', 'nominator', 'candidate', 'ffion', 'fiachra', 'oisin', 'total']
+        writer.writerow(header)
+        for i in range(0, amount):
+            if(voter == "Oisin"):
+                line = [movies[i], nominator[i], candidates[i], ffion[i], fiachra[i], votes[i], total[i]]
+                writer.writerow(line)
+            if(voter == "Ffion"):
+                line = [movies[i], nominator[i], candidates[i], votes[i], fiachra[i], oisin[i], total[i]]
+                writer.writerow(line)
+            if(voter == "Fiachra"):
+                line = [movies[i], nominator[i], candidates[i], ffion[i], votes[i], oisin[i], total[i]]
+                writer.writerow(line)
+    
+
+
+    return render_template('voting.html', award=award, year=year, films=movies, rows=rows, start=start, end=end, error=error, msg=msg, length=amount)
 
 
 
