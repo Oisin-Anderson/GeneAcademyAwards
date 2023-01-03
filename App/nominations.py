@@ -8,7 +8,7 @@ def nomdatcoll(film, person, awlink, candidate, year):
     error = 0
     msg = ""
     films = []
-    df = pd.read_csv("data/allFilms.csv")
+    df = pd.read_csv("data/"+year+"films.csv")
     for idx, row in df.iterrows():
         films.append(row["films"])
 

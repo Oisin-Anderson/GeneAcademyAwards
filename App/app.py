@@ -62,7 +62,7 @@ def nom(award):
         year = str(year)
 
     films = []
-    df = pd.read_csv("data/allFilms.csv")
+    df = pd.read_csv("data/"+year+"films.csv")
     for idx, row in df.iterrows():
         films.append(row["films"])
 
@@ -183,7 +183,7 @@ def indivnom(award):
         year = str(year)
 
     films = []
-    df = pd.read_csv("data/allFilms.csv")
+    df = pd.read_csv("data/"+year+"films.csv")
     for idx, row in df.iterrows():
         films.append(row["films"])
 
