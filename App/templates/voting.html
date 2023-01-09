@@ -35,7 +35,8 @@
                         {% for j in range(start, end) %}
                         <div class="card bg-warning">
                             <div class="card-header text-center">
-                                <h4>{{films[j]}}</h4>
+                              <h4>{{films[j]}}</h4>
+                              <h6>{{candidates[j]}}</h6>
                                 <input type="number" class="form-control" id="film{{j}}" name="film{{j}}" min="1" max="{{length}}" required>
                             </div>
                         </div>

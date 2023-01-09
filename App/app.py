@@ -5,6 +5,7 @@ import numpy as np
 import math
 from nominations import nomdatcoll, nomcsv, nomcode
 from voting import votdatcoll, votcode
+from awards import calculate, gettop, getall
 
 app = Flask(__name__)
 
@@ -277,9 +278,11 @@ def vot(award):
     awlink = nomcsv(award, year)
         
     films = []
+    candidates = []
     df = pd.read_csv(awlink)
     for idx, row in df.iterrows():
         films.append(row["movie"])
+        candidates.append(row["candidate"])
 
     length = len(films)
     rows = int(math.ceil(length/3))
@@ -296,7 +299,7 @@ def vot(award):
     error = 0
     msg = ""
 
-    return render_template('voting.html', award=award, year=year, films=films, rows=rows, start=start, end=end, error=error, msg=msg, length=length)
+    return render_template('voting.html', candidates=candidates, award=award, year=year, films=films, rows=rows, start=start, end=end, error=error, msg=msg, length=length)
 
 #Submit Votes
 @app.route('/subvot', methods=['GET', 'POST'])
@@ -382,7 +385,7 @@ def subvot():
     
 
 
-    return render_template('voting.html', award=award, year=year, films=movies, rows=rows, start=start, end=end, error=error, msg=msg, length=amount)
+    return render_template('voting.html', candidates=candidates, award=award, year=year, films=movies, rows=rows, start=start, end=end, error=error, msg=msg, length=amount)
 
 
 
@@ -392,11 +395,185 @@ def subvot():
 
 #Award Page Loads
 @app.route('/awapage', methods=['POST'])
-def awapage():
+def awapage(): 
+    
+    list = []
+    prog = []
+    year = request.form['year']
+
+    df = pd.read_csv("data/"+year+"Awards.csv")
+    for idx, row in df.iterrows():
+            list.append(row["awards"])
+            prog.append(row['completed'])
+
+    award = ""
+    num = len(prog)
+    for i in range(0, num):
+        if(prog[i] == "No"):
+            award = list[i]
+            break
+
+    if award == "":
+        return render_template('home.html')
+
+    calculate(year, award)
+    
+    with open('data/current.csv', 'w', encoding='UTF8', newline='') as f:
+        writer = csv.writer(f)
+        header = ['year', 'award']
+        writer.writerow(header)
+        line = [year, award]
+        writer.writerow(line)
 
 
-    return render_template('headpage.html')
+    return render_template('award.html', award=award, year=year)
 
+
+#Award Page Loads
+@app.route('/third', methods=['POST', 'GET'])
+def third(): 
+    df = pd.read_csv("data/current.csv")
+    for idx, row in df.iterrows():
+            year = row["year"]
+            award = row['award']
+
+    if type(year) != str:
+        year = int(year)
+        year = str(year)
+
+    num = 3
+    link = "second"
+
+    awlink = nomcsv(award, year)
+    movie, nominator, message, points = gettop(awlink, num)
+
+    return render_template('pos.html', award=award, year=year, movie=movie, nominator=nominator, message=message, points=points, link=link)
+
+#Award Page Loads
+@app.route('/second', methods=['POST', 'GET'])
+def second(): 
+    df = pd.read_csv("data/current.csv")
+    for idx, row in df.iterrows():
+            year = row["year"]
+            award = row['award']
+
+    if type(year) != str:
+        year = int(year)
+        year = str(year)
+
+    num = 2
+    link = "first"
+
+    awlink = nomcsv(award, year)
+    movie, nominator, message, points = gettop(awlink, num)
+
+    return render_template('pos.html', award=award, year=year, movie=movie, nominator=nominator, message=message, points=points, link=link)
+#Award Page Loads
+@app.route('/first', methods=['POST', 'GET'])
+def first(): 
+    df = pd.read_csv("data/current.csv")
+    for idx, row in df.iterrows():
+            year = row["year"]
+            award = row['award']
+
+    if type(year) != str:
+        year = int(year)
+        year = str(year)
+
+    num = 1
+    link = "all"
+
+    awlink = nomcsv(award, year)
+    movie, nominator, message, points = gettop(awlink, num)
+
+    return render_template('pos.html', award=award, year=year, movie=movie, nominator=nominator, message=message, points=points, link=link)
+
+
+#Award Page Loads
+@app.route('/all', methods=['POST', 'GET'])
+def all(): 
+    df = pd.read_csv("data/current.csv")
+    for idx, row in df.iterrows():
+            year = row["year"]
+            award = row['award']
+
+    if type(year) != str:
+        year = int(year)
+        year = str(year)
+
+    awlink = nomcsv(award, year)
+    movies, nominators, messages, ffion, fiachra, oisin, points = getall(awlink)
+
+    length = len(movies)
+    rows = int(math.ceil(length/3))
+
+    start = 0
+    end=3
+
+    list = []
+    prog = []
+    df = pd.read_csv("data/"+year+"Awards.csv")
+    for idx, row in df.iterrows():
+            list.append(row["awards"])
+            prog.append(row['completed'])
+
+    award = ""
+    num = len(prog)
+    for i in range(0, num):
+        if(prog[i] == "No"):
+            prog[i] = "Yes"
+            break
+
+    with open("data/"+year+"Awards.csv", 'w', encoding='UTF8', newline='') as f:
+        writer = csv.writer(f)
+        header = ['awards', 'completed']
+        writer.writerow(header)
+        for i in range(len(list)): 
+            line = [list[i], prog[i]]
+            writer.writerow(line)
+
+    return render_template('all.html', award=award, year=year, movies=movies, nominators=nominators, message=messages, ffion=ffion, fiachra=fiachra, oisin=oisin, points=points, nlength=length, rows=rows, start=start, end=end)
+
+#Award Page Loads
+@app.route('/restart', methods=['POST', 'GET'])
+def restart(): 
+    
+    list = []
+    prog = []
+    df = pd.read_csv("data/current.csv")
+    for idx, row in df.iterrows():
+            year = row["year"]
+
+    if type(year) != str:
+        year = int(year)
+        year = str(year)
+
+    df = pd.read_csv("data/"+year+"Awards.csv")
+    for idx, row in df.iterrows():
+            list.append(row["awards"])
+            prog.append(row['completed'])
+
+    award = ""
+    num = len(prog)
+    for i in range(0, num):
+        if(prog[i] == "No"):
+            award = list[i]
+            break
+
+    if award == "":
+        return render_template('home.html')
+
+    calculate(year, award)
+    
+    with open('data/current.csv', 'w', encoding='UTF8', newline='') as f:
+        writer = csv.writer(f)
+        header = ['year', 'award']
+        writer.writerow(header)
+        line = [year, award]
+        writer.writerow(line)
+
+
+    return render_template('award.html', award=award, year=year)
 
 if __name__ == '__main__':
     app.run()

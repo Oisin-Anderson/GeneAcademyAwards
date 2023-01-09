@@ -1,0 +1,29 @@
+{% extends 'partial/layout.html' %}
+
+{% block content %}
+    <div class="container p-2 mt-2 col-sm-10 bg-info">
+        <div class="row justify-content-center">
+            <h1>{{award}} {{year}}</h1>
+        </div>
+    </div>
+    <div class="container p-4 mt-5 col-sm-10 bg-warning">
+        <div class="row justify-content-center">
+            <h1>{{movie}}</h1>
+        </div>
+        <div class="row justify-content-center">
+            <h4>{{nominator}}</h4>
+        </div>
+        <div class="row justify-content-center">
+            <h4>{{message}}</h4>
+        </div>
+        <div class="row justify-content-center">
+            <h4>{{points}}</h4>
+        </div>
+    </div>
+    <div class="container p-3 mt-3 col-sm-10 bg-info">
+        <div class="row mt-3 justify-content-center">
+            <h3><a href="/{{link}}" class="text-decoration-none text-dark text-wrap text-capitalize">next</a></h3>
+        </div>
+    </div>
+
+{% endblock %}

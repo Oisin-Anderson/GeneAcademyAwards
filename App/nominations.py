@@ -54,10 +54,10 @@ def nomdatcoll(film, person, awlink, candidate, year):
     nlength = len(nominated)
     with open(awlink, 'w', encoding='UTF8', newline='') as f:
         writer = csv.writer(f)
-        header = ['movie', 'nominator', 'candidate']
+        header = ['movie', 'nominator', 'candidate', 'ffion', 'fiachra', 'oisin', 'total']
         writer.writerow(header)
         for i in range(0, nlength):
-            line = [nominated[i], nominator[i], candidates[i]]
+            line = [nominated[i], nominator[i], candidates[i], "", "", "", ""]
             writer.writerow(line)
 
     rows = int(math.ceil(nlength/3))
