@@ -401,7 +401,7 @@ def awapage():
     prog = []
     year = request.form['year']
 
-    df = pd.read_csv("data/"+year+"Awards.csv")
+    df = pd.read_csv("C:/Users/oisin/OneDrive/Documents/GitHub/GeneAcademyAwards/App/data/2018-2022AwardList.csv")
     for idx, row in df.iterrows():
             list.append(row["awards"])
             prog.append(row['completed'])
